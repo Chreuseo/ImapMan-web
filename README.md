@@ -37,8 +37,10 @@ Byte sein.
 
 Mit `OIDC_REQUIRED_ROLE` kann eine erforderliche Keycloak-Rolle festgelegt
 werden. Die Anwendung akzeptiert sowohl Realm-Rollen als auch Client-Rollen
-des unter `OIDC_CLIENT_ID` konfigurierten Clients. Bleibt die Variable leer,
-erhalten alle erfolgreich angemeldeten Keycloak-Benutzer Zugriff.
+des unter `OIDC_CLIENT_ID` konfigurierten Clients. Die Rollen werden aus ID-
+und Access-Token zusammengeführt und in der signierten Frontend-Session
+gespeichert. Bleibt die Variable leer, erhalten alle erfolgreich angemeldeten
+Keycloak-Benutzer Zugriff.
 
 # ImapMan
 

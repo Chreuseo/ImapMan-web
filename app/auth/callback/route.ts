@@ -11,10 +11,11 @@ export async function GET(request: NextRequest) {
   const callback = getOidcRedirectUri(request.url);
   const tokenResponse = await fetch(discovery.token_endpoint, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "authorization_code", code, redirect_uri: callback, client_id: clientId, ...(clientSecret ? { client_secret: clientSecret } : {}) }) });
   if (!tokenResponse.ok) return new NextResponse("Keycloak hat den Anmeldecode abgelehnt.", { status: 401 });
-  const { id_token: idToken } = await tokenResponse.json() as { id_token?: string };
+  const { id_token: idToken, access_token: accessToken } = await tokenResponse.json() as { id_token?: string; access_token?: string };
   if (!idToken) return new NextResponse("Keycloak lieferte kein ID-Token.", { status: 401 });
   const response = NextResponse.redirect(new URL("/", request.url));
-  response.cookies.set(sessionCookie(await createSession(await verifyOidcToken(idToken, nonce))));
+  const session = await verifyOidcToken(idToken, nonce, accessToken);
+  response.cookies.set(sessionCookie(await createSession(session.sub, session.roles)));
   response.cookies.delete("oidc_state"); response.cookies.delete("oidc_nonce");
   return response;
 }
