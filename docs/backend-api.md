@@ -183,6 +183,8 @@ Alle folgenden Routen haben den Prefix `/api/v1`.
 | GET | `/data-sources` | - | Datenquellen ohne DSN laden |
 | POST | `/data-sources` | `DataSource` plus `dsn` | Datenquelle erstellen |
 | DELETE | `/data-sources/{dataSourceID}` | - | Unreferenzierte Datenquelle loeschen |
+| POST | `/data-sources/{dataSourceID}/test` | - | Verbindung zur Datenquelle testen |
+| POST | `/data-sources/{dataSourceID}/preview` | `DataSourcePreviewRequest` | Passende und ausgefilterte externe Datensaetze vorschauen |
 | GET | `/processed-messages` | - | Verarbeitungsstatus laden |
 
 ## Formulare und Validierung

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createDataSource, createDistributor, createList, createMailbox, createMember, linkConfiguration, unlinkConfiguration } from "./actions";
 import { DeleteButton } from "./delete-button";
 import { FilterFields } from "./filter-fields";
+import { DataSourceTools } from "./data-source-tools";
 import { imapmanFetch } from "@/lib/imapman";
 import type { DataSource, Distributor, MailingList, Mailbox, Member, ProcessedMessage } from "@/lib/types";
 
@@ -102,7 +103,7 @@ function Content({ page, mailboxes, distributors, lists, sources, messages, sele
   if (page === "data-sources") return <div className="split"><section><h2>Neue Datenquelle</h2><form action={createDataSource}>
     <Field name="name" label="Bezeichnung" required /><label>Treiber<select name="driver" defaultValue="postgres"><option value="postgres">PostgreSQL</option><option value="mysql">MySQL</option><option value="sqlite">SQLite</option></select></label>
     <Field name="dsn" label="DSN" required placeholder="postgres://host/database" /><Field name="username" label="Benutzer (optional)" /><Field name="password" label="Passwort (optional)" type="password" /><button type="submit">Datenquelle anlegen</button>
-  </form><p className="hint">Die DSN wird nach dem Anlegen nicht mehr angezeigt.</p></section><Table title="Vorhandene Datenquellen" rows={sources} columns={["name", "driver", "username"]} page="data-sources" path={(item) => `/data-sources/${item.id}`} /></div>;
+  </form><p className="hint">Die DSN wird nach dem Anlegen nicht mehr angezeigt.</p></section><div><Table title="Vorhandene Datenquellen" rows={sources} columns={["name", "driver", "username"]} page="data-sources" path={(item) => `/data-sources/${item.id}`} /><DataSourceTools sources={sources} /></div></div>;
   return <section><h2>Verarbeitungsstatus</h2><MessageTable messages={messages} /></section>;
 }
 
