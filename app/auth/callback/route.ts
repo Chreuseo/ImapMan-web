@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authMode, createSession, sessionCookie, verifyOidcToken } from "@/lib/auth";
+import { authMode, createSession, getOidcRedirectUri, sessionCookie, verifyOidcToken } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   if (authMode() !== "oidc") return NextResponse.redirect(new URL("/", request.url));
@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   if (!code || !state || state !== expectedState || !nonce) return new NextResponse("Ungültige OIDC-Anmeldung.", { status: 400 });
   const issuer = process.env.OIDC_ISSUER_URL!, clientId = process.env.OIDC_CLIENT_ID!, clientSecret = process.env.OIDC_CLIENT_SECRET;
   const discovery = await fetch(`${issuer.replace(/\/$/, "")}/.well-known/openid-configuration`, { cache: "no-store" }).then((response) => response.json() as Promise<{ token_endpoint: string }>);
-  const callback = new URL("/auth/callback", request.url).toString();
+  const callback = getOidcRedirectUri(request.url);
   const tokenResponse = await fetch(discovery.token_endpoint, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "authorization_code", code, redirect_uri: callback, client_id: clientId, ...(clientSecret ? { client_secret: clientSecret } : {}) }) });
   if (!tokenResponse.ok) return new NextResponse("Keycloak hat den Anmeldecode abgelehnt.", { status: 401 });
   const { id_token: idToken } = await tokenResponse.json() as { id_token?: string };

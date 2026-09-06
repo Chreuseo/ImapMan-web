@@ -28,10 +28,12 @@ Das Frontend sendet Anfragen an die ImapMan-API mit
 | `oidc` | Keycloak über OIDC Authorization Code Flow. | `FRONTEND_SESSION_SECRET`, `OIDC_ISSUER_URL`, `OIDC_CLIENT_ID`, optional `OIDC_CLIENT_SECRET`, `OIDC_REQUIRED_ROLE` |
 
 Für Keycloak muss als gültige Redirect-URI
-`https://<frontend-host>/auth/callback` beim Client hinterlegt sein. Der
-Keycloak-Issuer ist die Realm-URL, z. B.
-`https://keycloak.example.org/realms/imapman`. `FRONTEND_SESSION_SECRET` muss
-ein zufälliger, stabiler Wert mit mindestens 32 Byte sein.
+`https://<frontend-host>/auth/callback` beim Client hinterlegt sein. Der Wert
+kann in `.env` über `OIDC_REDIRECT_URI` fest definiert werden; ohne Angabe
+fällt die App auf die aktuelle Request-URL zurück. Der Keycloak-Issuer ist die
+Realm-URL, z. B. `https://keycloak.example.org/realms/imapman`.
+`FRONTEND_SESSION_SECRET` muss ein zufälliger, stabiler Wert mit mindestens 32
+Byte sein.
 
 Mit `OIDC_REQUIRED_ROLE` kann eine erforderliche Keycloak-Rolle festgelegt
 werden. Die Anwendung akzeptiert sowohl Realm-Rollen als auch Client-Rollen

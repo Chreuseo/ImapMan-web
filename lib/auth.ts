@@ -74,6 +74,12 @@ function isRoleContainer(value: unknown): value is { roles: string[] } {
   return isObject(value) && Array.isArray(value.roles) && value.roles.every((role) => typeof role === "string");
 }
 
+export function getOidcRedirectUri(requestUrl?: string) {
+  if (process.env.OIDC_REDIRECT_URI) return process.env.OIDC_REDIRECT_URI;
+  if (!requestUrl) throw new Error("OIDC_REDIRECT_URI fehlt und kein Request-URL ist verfügbar.");
+  return new URL("/auth/callback", requestUrl).toString();
+}
+
 export function denyBasic() {
   return new NextResponse("Anmeldung erforderlich.", { status: 401, headers: { "WWW-Authenticate": 'Basic realm="ImapMan Verwaltung", charset="UTF-8"' } });
 }
