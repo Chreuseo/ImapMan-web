@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { previewDataSource, testDataSource, type DataSourceToolState } from "./actions";
 import { FilterFields } from "./filter-fields";
-import type { DataSource, JSONValue } from "@/lib/types";
+import type { DataSource, JSONValue, MailingList } from "@/lib/types";
 
 const initialState: DataSourceToolState = {};
 
@@ -32,6 +32,26 @@ export function DataSourceTools({ sources }: { sources: DataSource[] }) {
     {previewState.error && <p className="notice error">{previewState.error}</p>}
     {previewState.preview && <PreviewTables matching={previewState.preview.matching} nonMatching={previewState.preview.non_matching} limit={previewState.preview.limit} />}
   </section>;
+}
+
+export function SavedListPreview({ list }: { list: MailingList }) {
+  const [previewState, previewAction, previewing] = useActionState(previewDataSource, initialState);
+  const conditions = list.filter ?? [];
+  return <div className="saved-list-preview">
+    <h3>Gespeicherter Filter</h3>
+    {conditions.length ? <table className="filter-summary"><thead><tr><th>Spalte</th><th>Operator</th><th>Wert</th></tr></thead><tbody>{conditions.map((condition, index) => <tr key={`${condition.column}-${index}`}><td>{condition.column}</td><td>{condition.op}</td><td>{String(condition.value)}</td></tr>)}</tbody></table> : <p className="hint">Kein Filter hinterlegt. Alle Datensätze werden berücksichtigt.</p>}
+    <form action={previewAction} className="saved-list-preview-form">
+      <input type="hidden" name="data_source_id" value={list.datasource_id ?? ""} />
+      <input type="hidden" name="recipient_table" value={list.recipient_table ?? ""} />
+      <input type="hidden" name="email_column" value={list.email_column ?? ""} />
+      <input type="hidden" name="name_column" value={list.name_column ?? ""} />
+      {conditions.map((condition, index) => <span key={`hidden-${condition.column}-${index}`}><input type="hidden" name="filter_column" value={condition.column} /><input type="hidden" name="filter_op" value={condition.op} /><input type="hidden" name="filter_value" value={String(condition.value)} /></span>)}
+      <label>Limit je Gruppe<input name="limit" type="number" min="1" max="1000" defaultValue="20" /></label>
+      <button type="submit" disabled={previewing}>{previewing ? "Lade ..." : "Filtervorschau laden"}</button>
+    </form>
+    {previewState.error && <p className="notice error">{previewState.error}</p>}
+    {previewState.preview && <PreviewTables matching={previewState.preview.matching} nonMatching={previewState.preview.non_matching} limit={previewState.preview.limit} />}
+  </div>;
 }
 
 function PreviewTables({ matching, nonMatching, limit }: { matching: Record<string, JSONValue>[]; nonMatching: Record<string, JSONValue>[]; limit: number }) {
